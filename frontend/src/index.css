@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: #050816;
+  color: #f8fafc;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.glass-card {
+  backdrop-filter: blur(18px);
+}
+
+.blueprint-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .055) 1px, transparent 1px);
+  background-size: 58px 58px;
+  mask-image: radial-gradient(circle at 50% 18%, rgba(0, 0, 0, .95), transparent 72%);
+  opacity: .42;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #7aa8ff;
+  box-shadow: 0 0 22px rgba(122, 168, 255, .85);
+  animation: drift 9s ease-in-out infinite;
+}
+
+.particle-one {
+  left: 9%;
+  top: 23%;
+}
+
+.particle-two {
+  left: 84%;
+  top: 18%;
+  animation-delay: 1.4s;
+}
+
+.particle-three {
+  left: 78%;
+  top: 64%;
+  animation-delay: 2.8s;
+}
+
+.particle-four {
+  left: 18%;
+  top: 72%;
+  animation-delay: 4.2s;
+}
+
+.wave-bar {
+  animation: waveform 1.05s ease-in-out infinite;
+}
+
+.button-glow {
+  animation: pulseGlow 2.8s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: .42;
+  }
+
+  50% {
+    transform: translate3d(14px, -22px, 0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}

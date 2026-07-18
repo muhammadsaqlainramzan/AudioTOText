@@ -6,48 +6,50 @@ import {
   FiZap,
 } from 'react-icons/fi';
 import SectionHeading from '../components/SectionHeading.jsx';
-
-const features = [
-  {
-    icon: FiZap,
-    title: 'Speech Recognition',
-    description: 'High-fidelity audio recognition keeps transcripts readable and searchable.',
-  },
-  {
-    icon: FiGlobe,
-    title: 'Multi-language Support',
-    description: 'Transcribe content across 100+ languages for global teams and creators.',
-  },
-  {
-    icon: FiUsers,
-    title: 'Speaker Detection',
-    description: 'Separate voices automatically across meetings, podcasts and interviews.',
-  },
-  {
-    icon: FiZap,
-    title: 'Lightning Fast Processing',
-    description: 'Optimized AI processing helps most files finish in under one minute.',
-  },
-  {
-    icon: FiShield,
-    title: 'Secure Cloud Storage',
-    description: 'Encrypted upload and controlled retention keep sensitive audio protected.',
-  },
-  {
-    icon: FiDownloadCloud,
-    title: 'Export to TXT DOCX PDF SRT',
-    description: 'Download transcripts for notes, reports, captions and publishing workflows.',
-  },
-];
+import { useApp } from '../context/AppContext.jsx';
 
 export default function Features() {
+  const { t } = useApp();
+  const features = [
+    {
+      icon: FiZap,
+      title: t('features.speechTitle'),
+      description: t('features.speechDescription'),
+    },
+    {
+      icon: FiGlobe,
+      title: t('features.languageTitle'),
+      description: t('features.languageDescription'),
+    },
+    {
+      icon: FiUsers,
+      title: t('features.speakerTitle'),
+      description: t('features.speakerDescription'),
+    },
+    {
+      icon: FiZap,
+      title: t('features.fastTitle'),
+      description: t('features.fastDescription'),
+    },
+    {
+      icon: FiShield,
+      title: t('features.storageTitle'),
+      description: t('features.storageDescription'),
+    },
+    {
+      icon: FiDownloadCloud,
+      title: t('features.exportTitle'),
+      description: t('features.exportDescription'),
+    },
+  ];
+
   return (
     <section id="features" className="px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-container">
         <SectionHeading
-          eyebrow="AI Features"
-          title="Everything a modern transcription workflow needs."
-          description="Built around accuracy, export flexibility and a premium upload experience."
+          eyebrow={t('features.eyebrow')}
+          title={t('features.title')}
+          description={t('features.description')}
         />
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">

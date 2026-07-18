@@ -1,0 +1,8 @@
+AT2 Transcriber API running on http://localhost:5000
+[0mGET /api/health [32m200[0m 33.530 ms - 101[0m
+[0mGET /api/health [32m200[0m 2.989 ms - 101[0m
+[0mPOST /api/transcriptions [33m400[0m 1229.168 ms - 54[0m
+[0mGET /api/health [32m200[0m 0.326 ms - 101[0m
+[0mPOST /api/transcriptions [32m201[0m 26512.284 ms - 1647[0m
+[0mPOST /api/transcriptions [32m201[0m 7004.480 ms - 791[0m
+[0mGET /api/health [32m200[0m 6.250 ms - 101[0m

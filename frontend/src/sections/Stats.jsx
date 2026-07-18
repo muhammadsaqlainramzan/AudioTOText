@@ -1,11 +1,18 @@
-const stats = [
-  { value: '10,000+', label: 'Files Transcribed' },
-  { value: '98%', label: 'Accuracy' },
-  { value: '100+', label: 'Languages' },
-  { value: '50+', label: 'Countries' },
-];
+import { useApp } from '../context/AppContext.jsx';
+import {
+  supportedCountryCount,
+  supportedTranscriptionLanguageCount,
+} from '../i18n/translations.js';
 
 export default function Stats() {
+  const { t } = useApp();
+  const stats = [
+    { value: '10,000+', label: t('stats.files') },
+    { value: '98%', label: t('stats.accuracy') },
+    { value: String(supportedTranscriptionLanguageCount), label: t('stats.languages') },
+    { value: `${supportedCountryCount}+`, label: t('stats.countries') },
+  ];
+
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-container gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -1,36 +1,37 @@
 import { useState } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 import SectionHeading from '../components/SectionHeading.jsx';
-
-const faqs = [
-  {
-    question: 'What audio formats are supported?',
-    answer: 'AT2 supports MP3, WAV, MP4, M4A and AAC files up to 2GB.',
-  },
-  {
-    question: 'How many languages can AT2 transcribe?',
-    answer: 'AT2 is designed for transcription in over 100 languages.',
-  },
-  {
-    question: 'Can I export my transcript?',
-    answer: 'Yes. Transcript exports can support TXT, DOCX, PDF and SRT formats.',
-  },
-  {
-    question: 'Is my uploaded data secure?',
-    answer: 'Files are encrypted during upload and can be automatically deleted after processing.',
-  },
-];
+import { useApp } from '../context/AppContext.jsx';
 
 export default function FAQ() {
   const [active, setActive] = useState(0);
+  const { t } = useApp();
+  const faqs = [
+    {
+      question: t('faq.formatsQuestion'),
+      answer: t('faq.formatsAnswer'),
+    },
+    {
+      question: t('faq.languagesQuestion'),
+      answer: t('faq.languagesAnswer'),
+    },
+    {
+      question: t('faq.exportQuestion'),
+      answer: t('faq.exportAnswer'),
+    },
+    {
+      question: t('faq.secureQuestion'),
+      answer: t('faq.secureAnswer'),
+    },
+  ];
 
   return (
     <section id="faq" className="px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
         <SectionHeading
-          eyebrow="FAQ"
-          title="Questions before your first upload."
-          description="Quick answers for formats, languages, exports and privacy."
+          eyebrow={t('faq.eyebrow')}
+          title={t('faq.title')}
+          description={t('faq.description')}
         />
 
         <div className="space-y-3">

@@ -1,29 +1,28 @@
 import { FiStar } from 'react-icons/fi';
 import SectionHeading from '../components/SectionHeading.jsx';
-
-const testimonials = [
-  {
-    quote: 'Amazing accuracy and very easy to use.',
-    name: 'Sarah Johnson',
-  },
-  {
-    quote: 'Saved hours of manual transcription.',
-    name: 'Michael Lee',
-  },
-  {
-    quote: "Best transcription tool I've used.",
-    name: 'Emily Carter',
-  },
-];
+import { useApp } from '../context/AppContext.jsx';
 
 export default function Testimonials() {
+  const { t } = useApp();
+  const testimonials = [
+    {
+      quote: t('testimonials.quoteOne'),
+      name: 'Sarah Johnson',
+    },
+    {
+      quote: t('testimonials.quoteTwo'),
+      name: 'Michael Lee',
+    },
+    {
+      quote: t('testimonials.quoteThree'),
+      name: 'Emily Carter',
+    },
+  ];
+
   return (
     <section className="px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-container">
-        <SectionHeading
-          eyebrow="Testimonials"
-          title="Trusted by teams who need accurate transcripts fast."
-        />
+        <SectionHeading eyebrow={t('testimonials.eyebrow')} title={t('testimonials.title')} />
 
         <div className="grid gap-5 lg:grid-cols-3">
           {testimonials.map((testimonial) => (

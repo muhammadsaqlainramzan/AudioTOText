@@ -1,48 +1,51 @@
 import { useState } from 'react';
-import { FiChevronDown, FiMenu, FiX } from 'react-icons/fi';
+import { FiChevronDown, FiGlobe, FiMenu, FiX } from 'react-icons/fi';
 import { useApp } from '../context/AppContext.jsx';
 
-const navItems = [
-  { label: 'Features', href: '#features' },
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'FAQ', href: '#faq' },
-];
-
 function Logo() {
+  const { t } = useApp();
+
   return (
-    <a href="#top" className="flex items-center gap-3" aria-label="AT2 Transcriber home">
+    <a href="#top" className="flex items-center gap-3" aria-label={t('nav.home')}>
       <img src="/at2-mark.svg" alt="" className="h-9 w-9 rounded-xl shadow-glow" />
       <span className="text-base font-semibold tracking-normal text-white sm:text-lg">AT2 Transcriber</span>
     </a>
   );
 }
 
-function LanguageSelector() {
-  const { language, setLanguage, languages } = useApp();
+function LanguageSelector({ fullWidth = false }) {
+  const { siteLanguage, setSiteLanguage, siteLanguages } = useApp();
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative">
+    <div className={`relative min-w-0 ${fullWidth ? 'w-full' : ''}`}>
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex h-10 items-center gap-2 rounded-button border border-white/10 bg-white/[.04] px-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/[.07]"
+        className={`inline-flex h-10 min-w-0 items-center gap-2 rounded-button border border-white/10 bg-white/[.04] px-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/[.07] ${
+          fullWidth ? 'w-full justify-between' : 'max-w-[180px]'
+        }`}
       >
-        <span>{language}</span>
-        <FiChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
+        <FiGlobe className="h-4 w-4 shrink-0 text-royal-400" />
+        <span className="min-w-0 truncate">{siteLanguage}</span>
+        <FiChevronDown className={`h-4 w-4 shrink-0 transition ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open ? (
-        <div className="absolute right-0 mt-2 w-40 overflow-hidden rounded-card border border-white/15 bg-navy-900/95 p-1 shadow-premium backdrop-blur-xl">
-          {languages.map((item) => (
+        <div
+          className={`absolute mt-2 max-h-72 overflow-y-auto rounded-card border border-white/15 bg-navy-900/95 p-1 shadow-premium backdrop-blur-xl ${
+            fullWidth ? 'left-0 right-0 w-full' : 'right-0 w-48'
+          }`}
+        >
+          {siteLanguages.map((item) => (
             <button
               key={item}
               type="button"
               onClick={() => {
-                setLanguage(item);
+                setSiteLanguage(item);
                 setOpen(false);
               }}
-              className="block w-full rounded-xl px-3 py-2 text-left text-sm text-slate-200 transition hover:bg-white/[.07] hover:text-white"
+              className="block w-full truncate rounded-xl px-3 py-2 text-left text-sm text-slate-200 transition hover:bg-white/[.07] hover:text-white"
             >
               {item}
             </button>
@@ -55,6 +58,12 @@ function LanguageSelector() {
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const { t } = useApp();
+  const navItems = [
+    { label: t('nav.features'), href: '#features' },
+    { label: t('nav.howItWorks'), href: '#how-it-works' },
+    { label: t('nav.faq'), href: '#faq' },
+  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/15 bg-[rgba(30,45,80,.55)] backdrop-blur-[18px]">
@@ -79,13 +88,13 @@ export default function Navbar() {
             href="#signin"
             className="inline-flex h-10 items-center rounded-button border border-white/10 px-4 text-sm font-semibold text-white transition hover:border-royal-500/50 hover:bg-royal-600/10"
           >
-            Sign In
+            {t('nav.signIn')}
           </a>
         </div>
 
         <button
           type="button"
-          aria-label="Toggle navigation"
+          aria-label={t('nav.toggle')}
           onClick={() => setOpen((value) => !value)}
           className="inline-flex h-10 w-10 items-center justify-center rounded-button border border-white/10 bg-white/[.04] text-white md:hidden"
         >
@@ -106,13 +115,13 @@ export default function Navbar() {
                 {item.label}
               </a>
             ))}
-            <div className="flex items-center justify-between gap-3 pt-2">
-              <LanguageSelector />
+            <div className="grid gap-3 pt-2 min-[380px]:grid-cols-[minmax(0,1fr)_auto]">
+              <LanguageSelector fullWidth />
               <a
                 href="#signin"
-                className="inline-flex h-10 items-center rounded-button border border-white/10 px-4 text-sm font-semibold text-white"
+                className="inline-flex h-10 items-center justify-center rounded-button border border-white/10 px-4 text-sm font-semibold text-white"
               >
-                Sign In
+                {t('nav.signIn')}
               </a>
             </div>
           </div>

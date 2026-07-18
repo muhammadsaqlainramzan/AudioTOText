@@ -1,19 +1,36 @@
-const columns = [
-  {
-    title: 'Features',
-    links: ['Speech Recognition', 'Speaker Detection', 'Export Formats'],
-  },
-  {
-    title: 'Resources',
-    links: ['Help Center', 'Supported Formats', 'Security'],
-  },
-  {
-    title: 'Company',
-    links: ['About', 'Contact', 'Privacy'],
-  },
-];
+import { useApp } from '../context/AppContext.jsx';
+
+const companyUrl = 'https://m-techexpertsolutions.com/';
 
 export default function Footer() {
+  const { t } = useApp();
+  const columns = [
+    {
+      title: t('footer.features'),
+      links: [
+        { label: t('footer.speechRecognition') },
+        { label: t('footer.speakerDetection') },
+        { label: t('footer.exportFormats') },
+      ],
+    },
+    {
+      title: t('footer.resources'),
+      links: [
+        { label: t('footer.helpCenter'), href: companyUrl },
+        { label: t('footer.supportedFormats') },
+        { label: t('footer.security') },
+      ],
+    },
+    {
+      title: t('footer.company'),
+      links: [
+        { label: t('footer.about'), href: companyUrl },
+        { label: t('footer.contact'), href: companyUrl },
+        { label: t('footer.privacy') },
+      ],
+    },
+  ];
+
   return (
     <footer className="border-t border-white/10 px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-container">
@@ -24,7 +41,7 @@ export default function Footer() {
               <span className="text-lg font-semibold text-white">AT2 Transcriber</span>
             </a>
             <p className="mt-4 max-w-sm text-sm leading-6 text-slate-400">
-              AI-powered audio-to-text transcription for creators, teams and global workflows.
+              {t('footer.description')}
             </p>
           </div>
 
@@ -35,9 +52,14 @@ export default function Footer() {
               </h3>
               <ul className="mt-4 space-y-3">
                 {column.links.map((link) => (
-                  <li key={link}>
-                    <a href="#top" className="text-sm text-slate-300 transition hover:text-white">
-                      {link}
+                  <li key={link.label}>
+                    <a
+                      href={link.href || '#top'}
+                      target={link.href ? '_blank' : undefined}
+                      rel={link.href ? 'noreferrer' : undefined}
+                      className="text-sm text-slate-300 transition hover:text-white"
+                    >
+                      {link.label}
                     </a>
                   </li>
                 ))}
@@ -47,8 +69,8 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <span>© 2026 AT2 Transcriber</span>
-          <span>All Rights Reserved.</span>
+          <span>&copy; 2026 AT2 Transcriber</span>
+          <span>{t('footer.rights')}</span>
         </div>
       </div>
     </footer>

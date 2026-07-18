@@ -1,32 +1,34 @@
 import { FiCpu, FiDownload, FiUploadCloud } from 'react-icons/fi';
 import SectionHeading from '../components/SectionHeading.jsx';
-
-const steps = [
-  {
-    icon: FiUploadCloud,
-    title: 'Upload Audio',
-    description: 'Drop in audio or video files from meetings, interviews, podcasts or lectures.',
-  },
-  {
-    icon: FiCpu,
-    title: 'AI Processes Speech',
-    description: 'AT2 detects speech, languages, speakers and timestamps with advanced AI models.',
-  },
-  {
-    icon: FiDownload,
-    title: 'Download Transcript',
-    description: 'Export clean transcripts in TXT, DOCX, PDF or SRT for captions and workflows.',
-  },
-];
+import { useApp } from '../context/AppContext.jsx';
 
 export default function HowItWorks() {
+  const { t } = useApp();
+  const steps = [
+    {
+      icon: FiUploadCloud,
+      title: t('how.uploadTitle'),
+      description: t('how.uploadDescription'),
+    },
+    {
+      icon: FiCpu,
+      title: t('how.processTitle'),
+      description: t('how.processDescription'),
+    },
+    {
+      icon: FiDownload,
+      title: t('how.downloadTitle'),
+      description: t('how.downloadDescription'),
+    },
+  ];
+
   return (
     <section id="how-it-works" className="px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-container">
         <SectionHeading
-          eyebrow="How It Works"
-          title="From audio file to polished transcript in three steps."
-          description="AT2 keeps the workflow focused on upload, processing and export so transcription feels instant."
+          eyebrow={t('how.eyebrow')}
+          title={t('how.title')}
+          description={t('how.description')}
         />
 
         <div className="grid gap-5 lg:grid-cols-3">

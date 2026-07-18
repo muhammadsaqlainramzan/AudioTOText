@@ -1,32 +1,31 @@
 import { FiShield, FiTarget, FiZap } from 'react-icons/fi';
 import SectionHeading from '../components/SectionHeading.jsx';
-
-const reasons = [
-  {
-    icon: FiZap,
-    title: 'Lightning Fast',
-    description: 'Most files transcribed in under one minute.',
-  },
-  {
-    icon: FiTarget,
-    title: 'High Accuracy',
-    description: 'Powered by advanced AI speech recognition.',
-  },
-  {
-    icon: FiShield,
-    title: 'Privacy First',
-    description: 'Files are encrypted and automatically deleted after processing.',
-  },
-];
+import { useApp } from '../context/AppContext.jsx';
 
 export default function WhyChoose() {
+  const { t } = useApp();
+  const reasons = [
+    {
+      icon: FiZap,
+      title: t('why.fastTitle'),
+      description: t('why.fastDescription'),
+    },
+    {
+      icon: FiTarget,
+      title: t('why.accuracyTitle'),
+      description: t('why.accuracyDescription'),
+    },
+    {
+      icon: FiShield,
+      title: t('why.privacyTitle'),
+      description: t('why.privacyDescription'),
+    },
+  ];
+
   return (
     <section className="px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-container">
-        <SectionHeading
-          eyebrow="Why Choose AT2"
-          title="Premium transcription without workflow noise."
-        />
+        <SectionHeading eyebrow={t('why.eyebrow')} title={t('why.title')} />
 
         <div className="space-y-4">
           {reasons.map((reason) => {

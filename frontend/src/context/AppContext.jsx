@@ -1,17 +1,46 @@
 import { createContext, useContext, useMemo, useState } from 'react';
+import {
+  defaultSiteLanguage,
+  defaultTranscriptionLanguage,
+  siteLanguageOptions,
+  transcriptionLanguageOptions,
+  translations,
+} from '../i18n/translations.js';
 
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
-  const [language, setLanguage] = useState('Auto Detect');
+  const [siteLanguage, setSiteLanguage] = useState(defaultSiteLanguage);
+  const [transcriptionLanguage, setTranscriptionLanguage] = useState(defaultTranscriptionLanguage);
 
   const value = useMemo(
-    () => ({
-      language,
-      setLanguage,
-      languages: ['Auto Detect', 'English', 'Spanish', 'French', 'German', 'Arabic', 'Urdu'],
-    }),
-    [language],
+    () => {
+      const activeTranslations = translations[siteLanguage] || translations[defaultSiteLanguage];
+
+      function t(path) {
+        const value = path.split('.').reduce((current, key) => current?.[key], activeTranslations);
+        const fallback = path
+          .split('.')
+          .reduce((current, key) => current?.[key], translations[defaultSiteLanguage]);
+
+        if (value !== undefined && value !== null) {
+          return value;
+        }
+
+        return fallback || path;
+      }
+
+      return {
+        siteLanguage,
+        setSiteLanguage,
+        siteLanguages: siteLanguageOptions,
+        transcriptionLanguage,
+        setTranscriptionLanguage,
+        transcriptionLanguages: transcriptionLanguageOptions,
+        t,
+      };
+    },
+    [siteLanguage, transcriptionLanguage],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -6,7 +6,16 @@ const apiClient = axios.create({
   headers: {
     Accept: 'application/json',
   },
+  withCredentials: true,
 });
+
+export function getCurrentUser(config = {}) {
+  return apiClient.get('/auth/current', config);
+}
+
+export function logout(config = {}) {
+  return apiClient.post('/auth/logout', {}, config);
+}
 
 export function uploadAudioFile(file, options = {}, config = {}) {
   const formData = new FormData();

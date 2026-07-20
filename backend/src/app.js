@@ -3,6 +3,7 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import assistantRoutes from './routes/assistant.routes.js';
+import authRoutes from './routes/auth.routes.js';
 import healthRoutes from './routes/health.routes.js';
 import languageRoutes from './routes/language.routes.js';
 import transcriptionRoutes from './routes/transcription.routes.js';
@@ -26,6 +27,7 @@ app.use(
 
       callback(new Error('Origin is not allowed by CORS'));
     },
+    credentials: true,
   }),
 );
 app.use(express.json({ limit: '10mb' }));
@@ -33,6 +35,7 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 app.use('/api/health', healthRoutes);
 app.use('/api/assistant', assistantRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/languages', languageRoutes);
 app.use('/api/transcriptions', transcriptionRoutes);
 

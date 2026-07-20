@@ -166,6 +166,8 @@ const english = {
     howItWorks: 'How It Works',
     faq: 'FAQ',
     signIn: 'Sign In',
+    continueWithGoogle: 'Continue with Google',
+    signInDescription: 'Use your Google account',
     toggle: 'Toggle navigation',
     home: 'AT2 Transcriber home',
   },

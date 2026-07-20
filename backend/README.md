@@ -19,6 +19,22 @@ language and automatically route to the highest available model for that languag
 Set `OPENAI_API_KEY` to enable the optional AI transcript correction step. Without it, AT2 still
 returns the raw transcript and a correction warning, but it cannot improve spelling or grammar.
 
+To use MongoDB, add the following to `backend/.env`:
+
+- `MONGODB_URI=mongodb://localhost:27017`
+- `MONGODB_DB_NAME=at2_transcriber`
+
+If you use MongoDB Atlas, set `MONGODB_URI` to your Atlas connection string and keep
+`MONGODB_DB_NAME=at2_transcriber` or change it to your preferred database name.
+
+To use Google sign-in locally, add your OAuth credentials to `backend/.env` and set
+`GOOGLE_REDIRECT_URI` to the exact callback URL registered in your Google OAuth client.
+For local development that should normally be:
+
+- `http://localhost:5000/api/auth/google/callback`
+
+If you access the app through `127.0.0.1` instead of `localhost`, register that URL too.
+
 The backend preprocesses every upload into transcription-ready WAV:
 
 - Mono audio

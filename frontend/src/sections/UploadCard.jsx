@@ -70,6 +70,11 @@ const supportedTypes = [
   'video/x-msvideo',
 ];
 const formatHint = 'MP3, WAV, M4A, AAC, FLAC, OGG, MP4, MOV, AVI, MKV or WEBM';
+
+function getGoogleAuthUrl() {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+  return import.meta.env.VITE_GOOGLE_AUTH_URL || `${apiBaseUrl.replace(/\/+$|\/$/, '')}/auth/google`;
+}
 const validationMessages = {
   maxFile: `Maximum file size is ${MAX_UPLOAD_SIZE_LABEL}.`,
   maxAudioDuration: 'Maximum audio duration is 30 minutes.',
@@ -1151,11 +1156,11 @@ function buildChatReply(prompt = '', rows = [], options = {}) {
     return buildImprovedMeaningReply(prompt, rows, options);
   }
 
-  if (normalizedPrompt.includes('summar')) {
+  if (prompt === 'summarize' || normalizedPrompt.includes('summar')) {
     return buildSummary(rows);
   }
 
-  if (normalizedPrompt.includes('topic') || normalizedPrompt.includes('key point')) {
+  if (prompt === 'keyTopics' || normalizedPrompt.includes('topic') || normalizedPrompt.includes('key point')) {
     return buildKeyTopics(rows);
   }
 
@@ -1345,6 +1350,8 @@ function TranscriptWorkspace({
   confidence,
   words = [],
   t,
+  currentUser,
+  isAuthLoading,
   onTranscriptChange,
   onExport,
   isExporting,
@@ -1475,6 +1482,13 @@ function TranscriptWorkspace({
     scrollChatToLatest('smooth');
   }, [scrollChatToLatest]);
 
+  const chatActionButtons = [
+    { key: 'summarize', label: t('upload.summarize') },
+    { key: 'keyTopics', label: t('upload.keyTopics') },
+    { key: 'actionItems', label: t('upload.actionItems') },
+    { key: 'speakers', label: t('upload.speakers') },
+  ];
+
   const seekTo = useCallback((nextTime) => {
     const numericTime = Number(nextTime);
     const safeTime = Number.isFinite(numericTime) ? Math.max(0, numericTime) : 0;
@@ -1506,72 +1520,74 @@ function TranscriptWorkspace({
     media.pause();
   }, [mediaUrl]);
 
-  const submitChatMessage = useCallback(
-    async (message) => {
-      const prompt = String(message || chatInput).trim();
+  const submitChatMessage = async (message) => {
+    const prompt = String(message || chatInput).trim();
 
-      if (!prompt || isChatThinking) return;
+    if (!prompt || isChatThinking) return;
 
-      const userMessage = {
-        id: `user-${Date.now()}`,
-        role: 'user',
-        text: prompt,
-      };
+    if (!currentUser && !isAuthLoading) {
+      window.location.href = getGoogleAuthUrl();
+      return;
+    }
 
-      setChatMessages((current) => [...current, userMessage]);
-      setChatInput('');
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      text: prompt,
+    };
 
-      const fallbackText = buildChatReply(prompt, transcriptRows, { language });
+    setChatMessages((current) => [...current, userMessage]);
+    setChatInput('');
 
-      if (!shouldUseWordMeaningAssistant(prompt)) {
-        setChatMessages((current) => [
-          ...current,
-          {
-            id: `assistant-${Date.now()}`,
-            role: 'assistant',
-            text: fallbackText,
-          },
-        ]);
-        return;
-      }
+    const fallbackText = buildChatReply(prompt, transcriptRows, { language });
 
-      setIsChatThinking(true);
+    if (!shouldUseWordMeaningAssistant(prompt)) {
+      setChatMessages((current) => [
+        ...current,
+        {
+          id: `assistant-${Date.now()}`,
+          role: 'assistant',
+          text: fallbackText,
+        },
+      ]);
+      return;
+    }
 
-      try {
-        const response = await askWordMeaning({
-          question: prompt,
-          language,
-          transcriptRows: transcriptRows.map((row) => ({
-            speakerLabel: row.speakerLabel,
-            start: row.start,
-            text: row.text,
-          })),
-        });
+    setIsChatThinking(true);
 
-        setChatMessages((current) => [
-          ...current,
-          {
-            id: `assistant-${Date.now()}`,
-            role: 'assistant',
-            text: response.data?.answer || fallbackText,
-          },
-        ]);
-      } catch (error) {
-        setChatMessages((current) => [
-          ...current,
-          {
-            id: `assistant-${Date.now()}`,
-            role: 'assistant',
-            text: fallbackText,
-          },
-        ]);
-        toast.error(error.response?.data?.message || 'Unable to fetch word meaning. Using local answer.');
-      } finally {
-        setIsChatThinking(false);
-      }
-    },
-    [chatInput, isChatThinking, language, transcriptRows],
-  );
+    try {
+      const response = await askWordMeaning({
+        question: prompt,
+        language,
+        transcriptRows: transcriptRows.map((row) => ({
+          speakerLabel: row.speakerLabel,
+          start: row.start,
+          text: row.text,
+        })),
+      });
+
+      setChatMessages((current) => [
+        ...current,
+        {
+          id: `assistant-${Date.now()}`,
+          role: 'assistant',
+          text: response.data?.answer || fallbackText,
+        },
+      ]);
+    } catch (error) {
+      setChatMessages((current) => [
+        ...current,
+        {
+          id: `assistant-${Date.now()}`,
+          role: 'assistant',
+          text: fallbackText,
+        },
+      ]);
+      toast.error(error.response?.data?.message || 'Unable to fetch word meaning. Using local answer.');
+    } finally {
+      setIsChatThinking(false);
+    }
+  };
 
   const renderChatMessageLine = (line, messageId, index) => {
     const headingMatch = line.match(/^([A-Za-z][A-Za-z /()-]{2,34}):\s*(.*)$/);
@@ -1653,35 +1669,6 @@ function TranscriptWorkspace({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setAutoScroll((current) => !current)}
-            className={`flex h-10 items-center gap-2 rounded-button border px-4 text-sm font-semibold transition ${
-              autoScroll
-                ? 'border-royal-400/35 bg-royal-500/15 text-royal-100'
-                : 'border-white/10 bg-white/[.05] text-slate-200 hover:border-royal-400/35'
-            }`}
-          >
-            {t('upload.autoScroll')}
-            <span className={`h-5 w-9 rounded-full p-0.5 transition ${autoScroll ? 'bg-royal-500' : 'bg-white/15'}`}>
-              <span
-                className={`block h-4 w-4 rounded-full bg-white transition ${
-                  autoScroll ? 'translate-x-4' : 'translate-x-0'
-                }`}
-              />
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsEditing((current) => !current)}
-            className="flex h-10 items-center gap-2 rounded-button border border-white/10 bg-white/[.05] px-4 text-sm font-semibold text-slate-100 transition hover:border-royal-400/45"
-          >
-            <FiEdit3 className="h-4 w-4" />
-            {t('upload.edit')}
-          </button>
-        </div>
       </div>
 
       <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -1799,15 +1786,15 @@ function TranscriptWorkspace({
 
           <div className="border-t border-white/10 p-4">
             <div className="mb-3 flex flex-wrap gap-2">
-              {[t('upload.summarize'), t('upload.keyTopics'), t('upload.actionItems'), t('upload.speakers')].map((prompt) => (
+              {chatActionButtons.map((button) => (
                 <button
-                  key={prompt}
+                  key={button.key}
                   type="button"
                   disabled={isChatThinking}
-                  onClick={() => submitChatMessage(prompt)}
+                  onClick={() => submitChatMessage(button.key)}
                   className="rounded-full border border-white/10 bg-white/[.05] px-3 py-1.5 text-sm font-semibold text-slate-100 transition hover:border-royal-400/45 hover:bg-white/[.08] disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {prompt}
+                  {button.label}
                 </button>
               ))}
             </div>
@@ -1945,6 +1932,8 @@ export default function UploadCard() {
     transcriptionLanguage,
     setTranscriptionLanguage,
     transcriptionLanguages,
+    currentUser,
+    isAuthLoading,
     t,
   } = useApp();
   const {
@@ -2361,6 +2350,8 @@ export default function UploadCard() {
           confidence={confidence}
           words={words}
           t={t}
+          currentUser={currentUser}
+          isAuthLoading={isAuthLoading}
           onTranscriptChange={setEditedTranscript}
           onExport={handleExport}
           isExporting={isExporting}

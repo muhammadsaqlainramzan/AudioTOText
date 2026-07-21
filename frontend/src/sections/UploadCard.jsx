@@ -71,6 +71,27 @@ const supportedTypes = [
 ];
 const formatHint = 'MP3, WAV, M4A, AAC, FLAC, OGG, MP4, MOV, AVI, MKV or WEBM';
 
+function getErrorMessage(error, fallbackMessage, t) {
+  const message = error?.message || '';
+  const normalizedMessage = message.toLowerCase();
+  const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+
+  if (
+    isOffline ||
+    error?.code === 'ERR_NETWORK' ||
+    error?.code === 'ECONNABORTED' ||
+    error?.code === 'ETIMEDOUT' ||
+    normalizedMessage.includes('network error') ||
+    normalizedMessage.includes('failed to fetch') ||
+    normalizedMessage.includes('socket hang up') ||
+    normalizedMessage.includes('timeout')
+  ) {
+    return t('upload.noInternet');
+  }
+
+  return error?.response?.data?.message || message || fallbackMessage;
+}
+
 function getGoogleAuthUrl() {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
   return import.meta.env.VITE_GOOGLE_AUTH_URL || `${apiBaseUrl.replace(/\/+$|\/$/, '')}/auth/google`;
@@ -2285,10 +2306,7 @@ export default function UploadCard() {
         return;
       }
 
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        t('upload.failed');
+      const message = getErrorMessage(error, t('upload.failed'), t);
       toast.error(message);
     } finally {
       clearProgressTimer();
@@ -2321,10 +2339,7 @@ export default function UploadCard() {
       const fallbackName = `at2-transcript.${format}`;
       downloadBlob(response.data, getDownloadFileName(response, fallbackName));
     } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        t('upload.failed');
+      const message = getErrorMessage(error, t('upload.failed'), t);
       toast.error(message);
     } finally {
       setIsExporting('');

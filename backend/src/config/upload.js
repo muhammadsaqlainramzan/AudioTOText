@@ -26,6 +26,14 @@ const storage = multer.diskStorage({
 
 function fileFilter(_request, file, callback) {
   const extension = path.extname(file.originalname).toLowerCase();
+  const originalName = (file.originalname || '').trim();
+  const containsDangerousPathChars = /[\\/]/.test(originalName) || /[<>:"|?*]/.test(originalName);
+  const containsSuspiciousControlChars = /[\u0000-\u001f\u007f]/.test(originalName);
+
+  if (containsDangerousPathChars || containsSuspiciousControlChars) {
+    callback(new AppError('Invalid file name.', 400));
+    return;
+  }
 
   if (!supportedExtensions.has(extension) || !supportedMimeTypes.has(file.mimetype || '')) {
     callback(new AppError(errorMessages.unsupportedFormat, 400));

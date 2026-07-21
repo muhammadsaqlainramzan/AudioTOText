@@ -200,6 +200,7 @@ const english = {
     progressLabel: 'Audio converted to text',
     success: 'Transcription completed.',
     failed: 'Unable to transcribe this file. Please try again.',
+    noInternet: 'No internet connection. Please check your internet connection and try again.',
     chooseOtherFile: 'Choose other file',
     cancelUpload: 'Cancel upload',
     cancelTranscription: 'Cancel upload/transcript',
